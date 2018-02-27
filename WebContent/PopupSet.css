@@ -1,0 +1,21 @@
+.bg0 {
+  background-color: #5050FF;
+  border-radius: 3px;
+  margin: 10px;
+  padding: 5px;
+  font-family: 'Malgun Gothic';
+  width: 410px;
+}
+
+.bg1 {
+  background-color: #9BC3FF;
+  border-radius: 3px;
+  margin-top: 5px;
+  padding: 10px;
+}
+
+p {
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+}

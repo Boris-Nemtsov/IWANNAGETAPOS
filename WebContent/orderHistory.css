@@ -1,0 +1,43 @@
+.bg0 {
+  background-color: #5050FF;
+  border-radius: 3px;
+  margin: 10px;
+  padding: 5px;
+  font-family: 'Malgun Gothic';
+  width: 1260px;
+}
+
+.bg1 {
+  background-color: #9BC3FF;
+  border-radius: 3px;
+  margin-top: 5px;
+  padding: 10px;
+}
+
+p {
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+}
+
+td, th {
+  align-items: center;
+  align-self: center;
+  align-content: center;
+}
+
+.fixheight0 {
+  width: 100%;
+  height: 500px;
+  overflow-y: auto;
+}
+
+.fixheight1 {
+  width: 100%;
+  height: 580px;
+  overflow-y: auto;
+}
+
+#divDetail th {
+  text-align: center;
+}

@@ -1,0 +1,121 @@
+.bg0 {
+  width: 97%;
+  height: 700px;
+  background-color: #5050FF;
+  border-radius: 3px;
+  padding: 5px;
+  margin: 10px;
+  font-family: 'Malgun Gothic';
+}
+
+.subject {
+  font-size: 35px;
+  font-weight: bold;
+  color: white;
+}
+
+.bg1 {
+  background-color: #9BC3FF;
+  border-radius: 3px;
+  padding: 5px;
+  margin: 0px -15px 0px -15px;
+  height: 630px;
+}
+
+.item {
+  height: 420px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.item-list div {
+  border: 1px solid white;
+  padding-left: 0px;
+  padding-right: 0px;
+  height: 32px;
+  line-height: 32px;
+}
+
+.others {
+  padding-top: 2px;
+  padding-left: 2px;
+}
+
+.others-button > div {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.select-button {
+  padding-top: 5px;
+  padding-left: 2px;
+}
+
+.select-button-row > div {
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-bottom: 5px;
+}
+
+.arrow-button-row {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.arrow-button-row > div {
+  padding-left: 1px;
+  padding-right: 3px;
+  padding-bottom: 5px;
+}
+
+.menu-button {
+  padding-top: 3px;
+  padding-left: 2px;
+}
+
+.menu-button-row > div{
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-bottom: 5px;
+}
+
+.div-total {
+  background-color: #2AA8C4;
+  height: 180px;
+  margin-top: 3px;
+  border-radius: 3px;
+  padding: 2px;
+}
+
+.total-left > div {
+  border: 1px solid white;
+  padding-top: 10px;
+  padding-left: 2px;
+  padding-right: 2px;
+  height: 58px;
+}
+
+.total-right-total > div {
+  border: 1px solid white;
+  height: 95px;
+  padding-top: 25px;
+  padding-left: 1px;
+  padding-right: 1px;
+}
+
+.total-right-total > .col-xs-9 {
+  padding-top: 22px;
+  font-size: 30px;
+}
+
+.total-right > div {
+  border: 1px solid white;
+  padding-top: 1px;
+  padding-left: 2px;
+  padding-right: 2px;
+  height: 40px;
+}
+
+.calc {
+  padding: 2px 2px 2px 4px;
+}

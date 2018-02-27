@@ -1,18 +1,23 @@
-<%@page import="Java.dbcontroller"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
 	<jsp:include page="session.jsp">
 		<jsp:param name="isadmin" value="0"/>
 	</jsp:include>
+	
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>주문내역관리</title>
 </head>
+<link rel="stylesheet" type="text/css" href="bootstrap-theme.min.css">
+<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="orderHistory.css">
 
-<script type="text/javascript" src="sql.js"></script>
-<script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="js/sql.js"></script>
+<script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+
 <script>
 var m_ListLen = 0;
 var m_DetailLen = 0;
@@ -47,7 +52,7 @@ function addOrderHistoryDetail(orderNo) {
 	var orderQuantity;
 	var orderPrice;
 	
-	clearOrderHistory();
+	clearOrderDetail();
 	
 	queryResult = sqlQuery("SELECT `name`, `quantity`, `price` FROM `orderitem` JOIN `item` ON `item`.`barcode` = `orderitem`.`barcode` WHERE `orderNo` = '" + orderNo + "'");
 	if(queryResult.Count == 0) {
@@ -82,7 +87,8 @@ function clearOrderHistory() {
 		$(this).remove();
 	});
 	m_ListLen = 0;
-	m_DetailLen = 0;
+	$('#obj_Total').val(0);
+	clearOrderDetail();
 }
 
 function clearOrderDetail() {
@@ -97,7 +103,6 @@ function clearOrderDetail() {
 	});
 	
 	m_DetailLen = 0;
-	$('#obj_Total').val(0);
 }
 
 function search() {
@@ -105,7 +110,7 @@ function search() {
 }
 
 function addOrderHistory(dateStart, dateEnd) {
-	var defClone = $('.historyList:eq(0)');
+	var defClone = $('.historyList').eq(0);
 	var queryResult;
 	var orderNo;
 	var orderTotalPrice;
@@ -149,77 +154,93 @@ function doOrderCancel(orderNo) {
 	if(confirm("정말로 삭제하시겠습니까?")) {
 		sqlQuery("DELETE FROM `order` WHERE no='" + orderNo + "'");
 		sqlQuery("DELETE FROM `orderitem` WHERE orderno='" + orderNo + "'");
+		search();
 	}
-	search();
 }
-
 </script>
+
 <body onload="init();">
-<div class=divHeader>
+  <div class="bg0">
+    <p>홈 > 주문내역관리</p>
+    <div class="bg1">
+      <table class="form-horizontal center-block">
+        <tr>
+          <td class="col-xs-7">
+            <div class="col-xs-12">
+              <table class="table table-borderd row">
+                <tr class="form-inline">
+                  <th>시간 지정&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                  <td>
+                    <input class="form-control input-sm" type=text name=obj_dateStart id=obj_dateStart> ~
+                    <input class="form-control input-sm" type=text name=obj_dateEnd id=obj_dateEnd>
+                  </td>
+                  <td>
+                    <input class="btn btn-primary" type=button onclick="javascript:Limit = 20; search();" value="검색">
+                  </td>
+                </tr>
+              </table>
+            </div>
 
-</div>
-<div class=divPageName>
+            <div class="fixheight0 col-xs-12">
+              <table class="table table-hover row" id=divList>
+                <tr>
+                  <th>번호</th>
+                  <th>거래시간</th>
+                  <th>금액</th>
+                  <th nowrap>상세내역</th>
+                  <th>취소</th>
+                </tr>
+                <tr class=historyList>
+                  <td>
+                    <input class="form-control input-sm" type=text id=obj_orderNo name=obj_orderNo readonly>
+                  </td>
+                  <td>
+                    <input class="form-control input-sm" type=text id=obj_orderDate name=obj_orderDate readonly>
+                  </td>
+                  <td>
+                    <input class="form-control input-sm" type=text id=obj_orderTotalPrice name=obj_orderTotalPrice readonly>
+                  </td>
+                  <td>
+                    <input class="obj_viewOrder btn btn-primary" type=button value="보기">
+                  </td>
+                  <td>
+                    <input class="obj_cancelOrder btn btn-primary" type=button value="취소">
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
 
-</div>
-<div class=divContents>
-<table width="100%" height="597" border="1" >
-  <tr>
-    <th width="80%" height="556" scope="col" valign="top">
-    	<table width="100%" border="1">
-      <tr>
-        <td>시간 지정</td>
-        <td>
-        <input type=text name=obj_dateStart id=obj_dateStart> ~ 
-        <input type=text name=obj_dateEnd id=obj_dateEnd>
-        </td>
-        <td><input type=button onclick="javascript:Limit = 20; search();" value="검색"></td>
-      </tr>
-    </table>
-    <div style="width:100%; height:500px; overflow:auto">
-	   	<table id=divList>
-		<tr>
-			<th>번호</th>
-			<th>거래시간</th>
-			<th>금액</th>
-			<th>상세내역</th>
-			<th>취소</th>
-		</tr>
-		<tr class=historyList>
-			<td><input type=text id=obj_orderNo name=obj_orderNo readonly></td>
-			<td><input type=text id=obj_orderDate name=obj_orderDate readonly></td>
-			<td><input type=text id=obj_orderTotalPrice name=obj_orderTotalPrice readonly></td>
-			<td><a href="#" class=obj_viewOrder>보기</a></td>
-			<td><a href="#" class=obj_cancelOrder>취소</a></td>
-		</tr>
-		</table>
-	</div>
-    </th>
-    <th width="20%" scope="col" valign="top">
-    <div style="overflow:auto">
-		<table border=0 id=divDetail>
-			<tr align=center>
-				<th>품명</th>
-				<th>수량</th>
-				<th>가격</th>
-			</tr>
-			<tr class=detailList>
-				<td><input type=text id=obj_detailName name=obj_detailName readonly></td>
-				<td><input type=text id=obj_detailQuan name=obj_detailQuan readonly></td>
-				<td><input type=text id=obj_detailTotal name=obj_detailTotal readonly></td>
-			</tr>
-		</table>
-	</div>
-	</th>
-	
-  </tr>
-  <tr>
-    <td>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;총액 : <input type=text id=obj_Total name=obj_Total value=0 disabled>
-    </td>
-    <td>&nbsp;</td>
-  </tr>
-</table>
+          <td class="col-xs-5">
+            <div class="fixheight1 col-xs-12">
+              <table class="table table-hover row" id=divDetail>
+                <tr>
+                  <th>품명</th>
+                  <th>수량</th>
+                  <th>가격</th>
+                </tr>
+                <tr class=detailList>
+                  <td><input class="form-control input-sm" type=text id=obj_detailName name=obj_detailName readonly></td>
+                  <td><input class="form-control input-sm" type=text id=obj_detailQuan name=obj_detailQuan readonly></td>
+                  <td><input class="form-control input-sm" type=text id=obj_detailTotal name=obj_detailTotal readonly></td>
+                </tr>
+              </table>
+            </td>
+          </div>
+        </tr>
 
-</div>
+        <tr>
+          <table class="table">
+            <tr>
+              <th class="text-center">총액</th>
+              <td>
+                <input type=text id=obj_Total name=obj_Total value=0 disabled>
+              </td>
+            </tr>
+          </table>
+        </tr>
+      </table>
+    </div>
+  </div>
 </body>
 </html>

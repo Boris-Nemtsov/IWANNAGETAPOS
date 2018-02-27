@@ -1,8 +1,10 @@
-<%@ page import="Java.dbcontroller" %>
+<%@page import="Java.dbcontroller"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     
 <%
+	request.setCharacterEncoding("UTF-8");
+	
 	System.out.println(request.getParameter("q"));
 	String result[][] = new dbcontroller().sqlQuery(request.getParameter("q"));
 	if(result == null) return; //INSERT, UPDATE, DELETE 는 값 반환이 없음

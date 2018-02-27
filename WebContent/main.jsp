@@ -1,255 +1,278 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    
-    <jsp:include page="session.jsp">
-		<jsp:param name="isadmin" value="0"/>
-	</jsp:include>
-	
+
+
+ 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>IWANNAGETAPOSSYSTEM</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>IWANNAGETAPOSSYSTEM</title>
 </head>
-<%
-	if(request.getMethod().equals("POST")){
-		if(request.getParameter("m_barcode") != null) {
-			double barcode = Double.parseDouble(request.getParameter("barcode"));	
-			String result[][] = new Java.dbcontroller().sqlQuery("SELECT name, price FROM item WHERE barcode='" + barcode + "'");
-			
-			if(result != null) {
-				out.println("<script>opener.document.getElementById('m_itemlist').add('" + result[0][0] + "', '" + result[0][1] + "')");
-				out.println("<script>alert('완료');</script>");
-			}
-		}
-	}
-%>
+<link rel="stylesheet" type="text/css" href="bootstrap-theme.min.css">
+<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="main.css">
 
+<body>
+<script type="text/javascript" src="js/sql.js"></script>
+<script type="text/javascript" src="js/inc.js"></script>
+<script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">$(init);</script>
 
-<style type="text/css">
-input[type=text], input[type=textbox] {
-	background-color:transparent;
-	border:none;
-}
-table {
-	border: 1px solid ;
-	border-collapse: collapse;
-}
-.noborder {
-	background:url("mainBgGround.png");
-	background-attachment: fixed;
-	background-repeat: repeat-x;
-	border: 0px solid ;
-	border-collapse: collapse;
-}
-
-.noborder2 {
-	background:url("mainBgGround.png");
-	background-attachment: fixed;
-	background-repeat: repeat-x;
-	background-position: bottom right;
-	border: 0px solid ;
-	border-collapse: collapse;
-}
-</style>
-<script type="text/javascript" src="sql.js"></script>
-<script type="text/javascript" src=inc.js></script>
-<script type="text/javascript" src="jquery-3.2.1.min.js"></script>
-
-<script type="text/javascript">
-$(init);
-
-function confirmOrder() {
-	if(m_ListLen == 0) {
-		alert("저장 할 주문이 없습니다.");
-		return;
-	}
-	
-	sqlQuery("INSERT INTO `order`(`totalprice`) VALUES('" + $('#obj_viewTotal').val() + "')");
-	var queryResult = sqlQuery("SELECT `no` FROM `order` ORDER BY `no` DESC LIMIT 0,1");
-	var newOrderNo = (queryResult.Count == 0) ? 0 : queryResult.Data[0].c0;
-	
-	$('.orderDetail').each(function() {
-		if($(this).find('#obj_itemChk').is(":checked") == true) {
-			sqlQuery("INSERT INTO `orderitem`(`orderNo`,`barcode`,`quantity`) VALUES('" + newOrderNo + "', '" + 
-					$(this).find('#obj_itemBarcode').val() + "', '" + 
-					$(this).find('#obj_itemQuan').val() + "')");
-		}
-	});
-	
-	clearList();
-}
-
-function clearList() {
-	$('.orderDetail').each(function() {
-		if($(this).index() == 1) {
-			$(this).find('[type=text],[type=hidden]').each(function() {
-				$(this).val("");
-			});
-			$(this).find('[type=checkbox]').prop('checked',false);
-			return true;
-		}
-		$(this).remove();
-	});
-	
-	m_ListLen = 0;
-	calcOrderTotal();
-}
-
-function showOrderHistory() {
-	window.open('orderHistory.jsp',"","width=1280,height=600");
-}
-
-function showAdminPage() {
-	window.open('AdminMain.jsp',"","width=500,height=600");
-}
-
-function addNormalItem(type, itemname, itemprice, itembarcode) {
-	var f;
-	if (type == 1) {
-		f = document.getElementById("divnormal");
-	} else {
-		f = document.getElementById("divtrash");
-	}
-		
-	f.innerHTML += 
-		"<tr><td>" +
-		"<input type=radio onclick=\"addList('" + itemname + "', '" + itemprice + "', '" + itembarcode + "')\">" +
-		"<td>" + itemname + "</td>" + 
-		"<td>" + itemprice + "</td></tr>";
-}
-
-function showItemSearch() {
-	window.open('itemSearch.jsp',"","width=400,height=300");
-}
-
-function logout() {
-	document.location.href = 'login.jsp';
-}
-
-</script>
-<table width="80%" height="597" border="0" class="noborder">
-  <tr>
-    <th colspan="2" valign="top" scope="col">
-    <table width="100%" height="569" border="0">
-      <tr valign=top>
-        <td width="69%" height="381">
-        	<div class=item style="width:100%; height:400px; overflow:auto">
-				<table border=0 id=divList width=100%>
-					<tr align=center>
-						<th>확인</th>
-						<th>품명</th>
-						<th>수량</th>
-						<th>가격</th>
-					</tr>
-					<tr class=orderDetail>
-						<td><input type=checkbox id=obj_itemChk name=obj_itemChk readonly></td>
-						<td><input type=text id=obj_itemName name=obj_itemName readonly></td>
-						<td><input type=text id=obj_itemQuan name=obj_itemQuan readonly style='text-align:right'> 개</td>
-						<td><input type=text id=obj_itemTotal name=obj_itemTotal readonly  style='text-align:right'> 원</td>
-						<input type=hidden id=obj_itemBarcode name=obj_itemBarcode>
-					</tr>
-				</table>
-			</div>
-        </td>
-        <td width="31%">
-        <div class=others style="width:100%; height:400px; overflow:auto">
-        	<table width="100%" border="0">
-			  <tr>
-			    <td>일반</td>
-			  </tr>
-			  <tr>
-			    <td>
-			    <table width=100% id=divNormal border="0">
-			    <tr>
-				    <th>확인</th>
-				    <th>이름</th>
-				    <th>가격</th>
-				</tr>
-				<tr class=othersNormalDetail>
-					<td><input type=radio id=obj_othersNormalSelect name=obj_othersNormalSelect></td>
-					<td><span id=obj_othersNormalNameSpan name=obj_othersNormalNameSpan></span></td>
-					<td><span id=obj_othersNormalPriceSpan name=obj_othersNormalPriceSpan></span></td>
-					<input type=hidden id=obj_othersNormalBarcode name=obj_othersNormalBarcode>
-				</tr>
-			    </table>
-			    </td>
-			  </tr>
-			  <tr><td>
-			  		　
-			  </td></tr>
-			  <tr>
-			  <td>쓰레기봉투</td>
-			  </tr>
-			  <tr>
-			  <td>
-			  	<table width=100% id=divTrash border="0">
-			    <tr>
-				    <th>확인</th>
-				    <th>이름</th>
-				    <th>가격</th>
-				</tr>
-				<tr class=othersTrashDetail>
-					<td><input type=radio id=obj_othersTrashSelect name=obj_othersTrashSelect></td>
-					<td><span id=obj_othersTrashNameSpan name=obj_othersTrashNameSpan></span></td>
-					<td><span id=obj_othersTrashPriceSpan name=obj_othersTrashPriceSpan></span></td>
-					<input type=hidden id=obj_othersTrashBarcode name=obj_othersTrashBarcode>
-				</tr>
-			    </table>
-			    </td>
-			    </tr>
-			  
-			</table>
+<div class="row">
+<div class="col-xs-12">
+  <div class="row bg0">
+  <div class="col-xs-12 text-center">
+    <p class="subject">IWANNAGETAPOSSYSTEM</p>
+    <div class="row">
+    <div class="col-xs-12">
+      <div class="row bg1">
+      <div class="col-xs-12">
+        <div class="row dtop">
+        <div class="col-xs-8 dtop-left">
+          <div class="row item">
+          <div class="col-xs-12 divList">
+            <div class="row item-list">
+            <div class="col-xs-1">확인</div>
+            <div class="col-xs-3">품명</div>
+            <div class="col-xs-3">단가</div>
+            <div class="col-xs-2">수량</div>
+            <div class="col-xs-3">가격</div>
+            </div>
+            <!--이하 계산할 내역------------------>
+            <div class="row item-list orderDetail">
+            <div class="col-xs-1" style="padding-top: 4px;">
+              <input type="checkbox" id=obj_itemChk name=obj_itemChk>
+            </div>
+            <div class="col-xs-3">
+              <input class="form-control input-sm" type=text id=obj_itemName name=obj_itemName readonly>
+            </div>
+            <div class="col-xs-2">
+              <input class="form-control input-sm" type=text id=obj_itemPrice name=obj_itemPrice readonly style='text-align:right'>
+            </div>
+            <div class="col-xs-1">원</div>
+            <div class="col-xs-1">
+              <input class="form-control input-sm" type=text id=obj_itemQuan name=obj_itemQuan readonly style='text-align:right'>
+            </div>
+            <div class="col-xs-1">개</div>
+            <div class="col-xs-2">
+              <input class="form-control input-sm" type=text id=obj_itemTotal name=obj_itemTotal readonly style='text-align:right'>
+            </div>
+            <input type=hidden id=obj_itemBarcode name=obj_itemBarcode>
+            <div class="col-xs-1">원</div>
+            </div>
+          </div>
+          </div>
         </div>
-      </td>
-      </tr>
-      <tr>
-        <td valign=top align=center colspan=1>	
-	        <table border=0>
-			<tr>
-				<td>
-				<table border=0>
-					<tr>
-						<td>상품코드 : 
-						<td><input type=text id=obj_viewBarcode name=obj_viewBarcode onkeydown="javascript:if(event.keyCode==13){addList(this.value); this.value='';}" style="border:1px;background-color:White;">
-					</tr>
-					<tr>
-						<td>상품명 : 
-						<td><input type=text id=obj_viewName name=obj_viewName disabled>
-					</tr>
-					<tr>
-						<td>판매단가 :
-						<td><input type=text id=obj_viewPrice name=obj_viewPrice disabled>
-					</tr>
-					<tr>
-						<td>총 금액 : 
-						<td><font size=10><span id=obj_viewTotalSpan name=obj_viewTotalSpan>0</span> 원</font>
-						<input type=hidden id=obj_viewTotal name=obj_viewTotal value=0 disabled>
-					</tr>
-					<tr>
-						<td colspan=2 align=center><input type=button onclick="confirmOrder()" value=계산>
-					</tr>
-				</table>
-				</td>
-			</tr>
-			</table>
-					<td valign=top >
-					<table width=100% border=0  class=noborder2>
-					<tr>
-			        <td valign=top><input type=image onclick="javascript:showItemSearch()" src=searchproduct.png width=119.25 height=70.875></td>
-			        <td valign=top><input type=image onclick="javascript:showOrderHistory()" src=orderhistory.png width=119.25 height=70.875></td></tr>
-			        <tr>
-			        <td valign=top><input type=image onclick="javascript:showAdminPage()" src=adminpage.png width=119.25 height=70.875></td>
-			        <td valign=top><input type=image onclick="javascript:logout()" src=Logout.png width=111.375 height=70.575></td></tr>
-			        </table>
-			    </td>
-			</td>
-		</td>
-      </tr>
-    </table>
-    </th>
-  </tr>
-</table>
+        <!--위에서 양쪽 경계------------------------------->
+        <div class="col-xs-4 dtop-right">
+          <div class="row others">
+          <div class="col-xs-12">
+            <div class="row others-button">
+            <div class="col-xs-6">
+              <input type="button" class="btn btn-primary btn-one btn-block" id=btn-normal value="기타">
+            </div>
+            <div class="col-xs-6">
+              <input type="button" class="btn btn-primary btn-one btn-block" id=btn-trash value="쓰레기봉투">
+            </div>
+            </div>
+            <!--구분---------->
+            <div class="row select-button">
+            <div class="col-xs-12">
+              <!--1층--------------------------->
+              <div class="row select-button-row">
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-warning btn-two btn-block" id=btn0 value="?" disabled>
+              </div>
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-warning btn-two btn-block" id=btn1 value="?" disabled>
+              </div>
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-warning btn-two btn-block" id=btn2 value="?" disabled>
+              </div>
+              </div>
+              <!--2층--------------------------->
+              <div class="row select-button-row">
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-primary btn-two btn-block" id=btn3 value="?" disabled>
+              </div>
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-primary btn-two btn-block" id=btn4 value="?" disabled>
+              </div>
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-primary btn-two btn-block" id=btn5 value="?" disabled>
+              </div>
+              </div>
+              <!--3층--------------------------->
+              <div class="row select-button-row">
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-warning btn-two btn-block" id=btn6 value="?" disabled>
+              </div>
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-warning btn-two btn-block" id=btn7 value="?" disabled>
+              </div>
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-warning btn-two btn-block" id=btn8 value="?" disabled>
+              </div>
+              </div>
+              <!--4층--------------------------->
+              <div class="row select-button-row">
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-primary btn-two btn-block" id=btn9 value="?" disabled>
+              </div>
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-primary btn-two btn-block" id=btn10 value="?" disabled>
+              </div>
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-primary btn-two btn-block" id=btn11 value="?" disabled>
+              </div>
+              </div>
+              <!--5층--------------------------->
+              <div class="row select-button-row">
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-warning btn-two btn-block" id=btn12 value="?" disabled>
+              </div>
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-warning btn-two btn-block" id=btn13 value="?" disabled>
+              </div>
+              <div class="col-xs-4 arrow-button">
+              <div class="row arrow-button-row">
+                <div class="col-xs-6">
+                  <input type="button" class="btn btn-warning btn-two btn-block" id=btn-left value="◀">
+                </div>
+                <div class="col-xs-6">
+                  <input type="button" class="btn btn-warning btn-two btn-block" id=btnr-right value="▶">
+                </div>
+              </div>
+              </div>
+              </div>
+            </div>
+            </div>
+          </div>
+          </div>
+        </div>
+        </div>
+        <!--위 아래 경계--------------------------------->
+        <div class="row dbottom">
+          <div class="col-xs-7 dbottom-left">
+            <div class="row div-total">
+            <div class="col-xs-5">
+              <div class="row total-left">
+                <div class="col-xs-4">
+                  <h5>상품코드</h5>
+                </div>
+                <div class="col-xs-8">
+                  <input type=text class="form-control" id=obj_viewBarcode name=obj_viewBarcode onkeydown="javascript:if(event.keyCode==13){addList(this.value); this.value='';}">
+                </div>
+              </div>
 
+              <div class="row total-left">
+                <div class="col-xs-4">
+                  <h5>상 품 명</h5>
+                </div>
+                <div class="col-xs-8">
+                  <input type=text class="form-control" id=obj_viewName name=obj_viewName disabled>
+                </div>
+              </div>
+
+              <div class="row total-left">
+                <div class="col-xs-4">
+                  <h5>판매단가</h5>
+                </div>
+                <div class="col-xs-8">
+                  <input type=text class="form-control" id=obj_viewPrice name=obj_viewPrice disabled>
+                </div>
+              </div>
+            </div>
+            <div class="col-xs-5">
+
+              <div class="row total-right-total">
+                <div class="col-xs-3">
+                  <h5>합  계</h5>
+                </div>
+                <div class="col-xs-9">
+                    <span id=obj_viewTotalSpan name=obj_viewTotalSpan>0</span> 원
+                    <input type=hidden id=obj_viewTotal name=obj_viewTotal disabled>
+                </div>
+              </div>
+
+              <div class="row total-right">
+                <div class="col-xs-4">
+                  <h5>내 신 돈</h5>
+                </div>
+                <div class="col-xs-8">
+                  <input type=text class="form-control" id=obj_viewPay name=obj_viewPay onkeydown="javascript:if(event.keyCode==13){confirmOrder(); }">
+                </div>
+              </div>
+
+              <div class="row total-right">
+                <div class="col-xs-4">
+                  <h5>거스름돈</h5>
+                </div>
+                <div class="col-xs-8">
+                  <input type=text class="form-control" id=obj_viewChange name=obj_viewChange disabled>
+                </div>
+              </div>
+
+            </div>
+            <div class="col-xs-2">
+              <div class="row calc">
+                <button type="button" class="btn btn-danger btn-four btn-block" id=btn-itemCalc onclick="confirmOrder();">계<br>산</button>
+              </div>
+            </div>
+            </div>
+          </div>
+          <!--경계------------------------------->
+          <div class="col-xs-5 dbottom-right">
+            <div class="row menu-button">
+            <div class="col-xs-12">
+              <!--1층--------------------------->
+              <div class="row menu-button-row">
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-success btn-three btn-block" id=btn-itemInsert value="물품추가">
+              </div>
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-success btn-three btn-block" id=btn-itemModify value="물품수정">
+              </div>
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-success btn-three btn-block" id=btn-itemSearch value="물품검색">
+              </div>
+              </div>
+              <!--2층--------------------------->
+              <div class="row menu-button-row">
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-success btn-three btn-block" id=btn-AccountInsert value="계정추가">
+              </div>
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-success btn-three btn-block" id=btn-AccountModify value="계정수정">
+              </div>
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-success btn-three btn-block" id=btn-orderHistory value="주문내역관리">
+              </div>
+              </div>
+              <!--3층--------------------------->
+              <div class="row menu-button-row">
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-success btn-three btn-block" id=btn-plus0 value="" disabled>
+              </div>
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-success btn-three btn-block" id=btn-logout value="로그아웃">
+              </div>
+              <div class="col-xs-4">
+                <input type="button" class="btn btn-success btn-three btn-block" id=btn-plus1 value="" disabled>
+              </div>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+    </div>
+  </div>
+  </div>
+</div>
+</div>
 </body>
 </html>
